@@ -11,6 +11,7 @@ def mean_variance_weights(
     n = len(mu)
     w = cp.Variable(n)
 
+
     objective = cp.Maximize(mu.values @ w - risk_aversion * cp.quad_form(w, cov.values))
 
     constraints = [
@@ -22,4 +23,7 @@ def mean_variance_weights(
     problem = cp.Problem(objective, constraints)
     problem.solve()
 
+    if w.value is None:
+        raise ValueError("MVO failed to converge")
+    
     return pd.Series(w.value, index=mu.index)

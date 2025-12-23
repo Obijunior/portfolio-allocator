@@ -9,19 +9,30 @@ from allocation.equal_weight import equal_weight
 from allocation.risk_parity import risk_parity_weights
 from allocation.mean_variance import mean_variance_weights
 
+USE_ML_PREDICTIONS = True
 
 def main():
+
     returns = pd.read_csv(
         "data/prices/returns_weekly.csv",
         index_col=0,
         parse_dates=True
     )
 
-    expected_returns = pd.read_csv(
-        "data/prices/expected_returns_weekly.csv",
-        index_col=0,
-        parse_dates=True
-    )
+    if USE_ML_PREDICTIONS:
+        expected_returns = pd.read_csv(
+            "data/prices/predicted_returns_weekly.csv",
+            index_col=0,
+            parse_dates=True
+        )
+    else:
+        expected_returns = pd.read_csv(
+            "data/prices/expected_returns_weekly.csv",
+            index_col=0,
+            parse_dates=True
+        )
+
+    expected_returns = expected_returns.shift(1)
 
     with open("data/covariances.pkl", "rb") as f:
         covs = pickle.load(f)

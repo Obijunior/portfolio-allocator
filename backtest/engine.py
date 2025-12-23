@@ -9,10 +9,11 @@ def run_backtest(
     transaction_cost=0.001
 ):
     portfolio_returns = []
-    dates = list(covs.keys())
+    dates = sorted(covs.keys())
+    assert all(dates[i] < dates[i+1] for i in range(len(dates)-1))
     prev_weights = None
     for date, next_date in zip(dates, dates[1:]):
-        mu = expected_returns.loc[date]
+        mu = expected_returns.loc[date].copy()
         cov = covs[date]
 
         weights = weight_func(mu, cov)
