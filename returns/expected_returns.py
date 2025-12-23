@@ -52,3 +52,6 @@ def compute_expected_returns(
 
     else:
         raise ValueError(f"Unknown method: {method}")
+
+def rolling_mean_expected_returns(returns, window=52):
+    return returns.rolling(window).mean()

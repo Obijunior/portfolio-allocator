@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.covariance import LedoitWolf
 
+import pickle
 
 def rolling_ledoit_wolf_covariance(
     returns: pd.DataFrame,
@@ -27,3 +28,7 @@ def rolling_ledoit_wolf_covariance(
         covariances[end_date] = cov
 
     return covariances
+
+def save_covariances(covs, path="data/covariances.pkl"):
+    with open(path, "wb") as f:
+        pickle.dump(covs, f)
