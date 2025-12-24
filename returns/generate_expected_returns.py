@@ -15,8 +15,8 @@ def main():
         window=52
     )
 
-    expected_returns.to_csv("data/expected_returns_weekly.csv")
-    print("Saved expected returns to data/expected_returns_weekly.csv")
+    expected_returns.to_csv("data/prices/expected_returns_weekly.csv")
+    print("Saved expected returns to data/prices/expected_returns_weekly.csv")
 
 
 if __name__ == "__main__":

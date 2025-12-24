@@ -19,20 +19,45 @@ def main():
         parse_dates=True
     )
 
-    if USE_ML_PREDICTIONS:
-        expected_returns = pd.read_csv(
-            "data/prices/predicted_returns_weekly.csv",
-            index_col=0,
-            parse_dates=True
-        )
-    else:
-        expected_returns = pd.read_csv(
-            "data/prices/expected_returns_weekly.csv",
-            index_col=0,
-            parse_dates=True
-        )
+    expected_stat = pd.read_csv(
+        "data/prices/expected_returns_weekly.csv",
+        index_col=0,
+        parse_dates=True
+    )
 
-    expected_returns = expected_returns.shift(1)
+    expected_ml = pd.read_csv(
+        "data/prices/predicted_returns_weekly.csv",
+        index_col=0,
+        parse_dates=True
+    )
+
+    # prevent lookahead bias for BOTH
+    expected_stat = expected_stat.shift(1)
+    expected_ml = expected_ml.shift(1)
+
+    def rank_zscore(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Convert per-date predictions into a cross-sectional ranked z-score signal.
+        For each date: rank assets, then z-score ranks.
+        """
+        ranks = df.rank(axis=1, method="average", ascending=True)
+        z = (ranks.sub(ranks.mean(axis=1), axis=0)).div(ranks.std(axis=1), axis=0)
+        return z.fillna(0.0)
+
+    expected_ml_ranked = rank_zscore(expected_ml)
+
+    # Choose μ mode:
+    MU_MODE = "blend"   # "stat", "ml_rank", "blend"
+    ALPHA_STAT = 0.7    # used only if MU_MODE == "blend"
+
+    if MU_MODE == "stat":
+        expected_returns = expected_stat
+    elif MU_MODE == "ml_rank":
+        expected_returns = expected_ml_ranked
+    elif MU_MODE == "blend":
+        expected_returns = ALPHA_STAT * expected_stat + (1 - ALPHA_STAT) * expected_ml_ranked
+    else:
+        raise ValueError(f"Unknown MU_MODE: {MU_MODE}")
 
     with open("data/covariances.pkl", "rb") as f:
         covs = pickle.load(f)
