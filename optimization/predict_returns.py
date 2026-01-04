@@ -1,8 +1,16 @@
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
+import sys
+from pathlib import Path
 
-ASSETS = ["SPY", "QQQ", "IWM", "TLT", "GLD", "VNQ"]
+# path to project root folder, get modules from there like get_data
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# import assets from get_data.py, no longer locked
+from get_data import ASSETS
+
 LAGS = 4  # number of lag weeks for features
 MIN_TRAIN = 52  # minimum training observations for expanding window
 
