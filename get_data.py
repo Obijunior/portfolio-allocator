@@ -4,7 +4,7 @@ import yfinance as yf
 from pathlib import Path
 
 # -----------------------
-# Configuration (LOCKED)
+# Configuration
 # -----------------------
 ASSETS = ["SPY", "QQQ", "IWM", "TLT", "GLD", "VNQ"]
 START_DATE = "2005-01-01"
